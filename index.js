@@ -32,12 +32,12 @@ function keepOnParentStart(parent, maps) {
 	};
 }
 
-function keepOnParentEnd(parent, children) {
+function keepOnParentEnd(parent, maps) {
 
 	validateParams(parent, maps);
 	// reverse the map so we can run an optimized loop
 	maps = maps.reverse();
-	return function parentStartKeeper(input) {
+	return function parentEndKeeper(input) {
 		var i = maps.length;
 		while (i--) {
 			removeAndPopulateFragment(parent, input, maps[i]);
@@ -46,7 +46,7 @@ function keepOnParentEnd(parent, children) {
 	};
 }
 
-function keepBeforeSibling(sibling, children) {
+function keepBeforeSibling(sibling, maps) {
 	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
 		throw new Error('The sibling node needs to be an element');
 	}
@@ -54,7 +54,7 @@ function keepBeforeSibling(sibling, children) {
 	validateParams(parent, maps);
 	// reverse the map so we can run an optimized loop
 	maps = maps.reverse();
-	return function parentStartKeeper(input) {
+	return function beforeSiblingKeeper(input) {
 		var i = maps.length;
 		while (i--) {
 			removeAndPopulateFragment(parent, input, maps[i]);
@@ -63,15 +63,13 @@ function keepBeforeSibling(sibling, children) {
 	};
 }
 
-function keepAfterSibling(sibling, children) {
+function keepAfterSibling(sibling, maps) {
 	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
 		throw new Error('The sibling node needs to be an element');
 	}
 	var parent = sibling.parentNode;
 	validateParams(parent, maps);
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse();
-	return function parentStartKeeper(input) {
+	return function afterSiblingKeeper(input) {
 		var i = maps.length;
 		while (i--) {
 			removeAndPopulateFragment(parent, input, maps[i]);

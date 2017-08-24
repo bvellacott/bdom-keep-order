@@ -4,7 +4,7 @@
   "description": "add/remove child/sibling elements on conditions and keep them in original order ",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "npm run build && mocha",
     "build": "node node_modules/babel-cli/bin/babel.js tool.js --out-file index.js"
   },
   "repository": {

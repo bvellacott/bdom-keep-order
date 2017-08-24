@@ -18,12 +18,12 @@ export function keepOnParentStart(parent, maps) {
 	}
 }
 
-export function keepOnParentEnd(parent, children, ...conditions) {
+export function keepOnParentEnd(parent, maps) {
 
 	validateParams(parent, maps)
 	// reverse the map so we can run an optimized loop
 	maps = maps.reverse()
-	return function parentStartKeeper(input) {
+	return function parentEndKeeper(input) {
 		let i = maps.length
 		while(i--) {
 			removeAndPopulateFragment(parent, input, maps[i])
@@ -32,7 +32,7 @@ export function keepOnParentEnd(parent, children, ...conditions) {
 	}
 }
 
-export function keepBeforeSibling(sibling, children, ...conditions) {
+export function keepBeforeSibling(sibling, maps) {
 	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
 		throw new Error('The sibling node needs to be an element')
 	}
@@ -40,7 +40,7 @@ export function keepBeforeSibling(sibling, children, ...conditions) {
 	validateParams(parent, maps)
 	// reverse the map so we can run an optimized loop
 	maps = maps.reverse()
-	return function parentStartKeeper(input) {
+	return function beforeSiblingKeeper(input) {
 		let i = maps.length
 		while(i--) {
 			removeAndPopulateFragment(parent, input, maps[i])
@@ -49,15 +49,13 @@ export function keepBeforeSibling(sibling, children, ...conditions) {
 	}
 }
 
-export function keepAfterSibling(sibling, children, ...conditions) {
+export function keepAfterSibling(sibling, maps) {
 	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
 		throw new Error('The sibling node needs to be an element')
 	}
 	let parent = sibling.parentNode
 	validateParams(parent, maps)
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse()
-	return function parentStartKeeper(input) {
+	return function afterSiblingKeeper(input) {
 		let i = maps.length
 		while(i--) {
 			removeAndPopulateFragment(parent, input, maps[i])
