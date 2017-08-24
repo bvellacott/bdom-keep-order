@@ -1,6 +1,6 @@
 {
   "name": "bdom-keep-order",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "add/remove child/sibling elements on conditions and keep them in original order ",
   "main": "index.js",
   "scripts": {

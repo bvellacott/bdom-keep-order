@@ -8,6 +8,7 @@ const { Element } = window
 const fragment = doc.createDocumentFragment()
 
 export function keepOnParentStart(parent, maps) {
+
 	validateParams(parent, maps)
 	return function parentStartKeeper(input) {
 		let i = maps.length
@@ -33,6 +34,7 @@ export function keepOnParentEnd(parent, maps) {
 }
 
 export function keepBeforeSibling(sibling, maps) {
+
 	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
 		throw new Error('The sibling node needs to be an element')
 	}
@@ -50,6 +52,7 @@ export function keepBeforeSibling(sibling, maps) {
 }
 
 export function keepAfterSibling(sibling, maps) {
+
 	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
 		throw new Error('The sibling node needs to be an element')
 	}
@@ -65,6 +68,7 @@ export function keepAfterSibling(sibling, maps) {
 }
 
 function removeAndPopulateFragment(parent, input, { condition, elements }) {
+
 	if(match(condition, input)) {
 		elements.forEach( element => (!doc.contains(element) && fragment.appendChild(element)) )
 	}
@@ -74,6 +78,7 @@ function removeAndPopulateFragment(parent, input, { condition, elements }) {
 }
 
 function validateParams(parent, maps) {
+
 	// validate parameters
 	if(!parent || (!(parent instanceof Element) && parent.nodeType !== ELEMENT_NODE)) {	
 		throw new Error('The parent node needs to be an element')
@@ -84,6 +89,7 @@ function validateParams(parent, maps) {
 }
 
 function match(condition, input) {
+
 	if(!condition) {
 		return false
 	}
