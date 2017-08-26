@@ -22,6 +22,7 @@ var _window = window,
 var fragment = doc.createDocumentFragment();
 
 function keepOnParentStart(parent, maps) {
+
 	validateParams(parent, maps);
 	return function parentStartKeeper(input) {
 		var i = maps.length;
@@ -47,6 +48,7 @@ function keepOnParentEnd(parent, maps) {
 }
 
 function keepBeforeSibling(sibling, maps) {
+
 	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
 		throw new Error('The sibling node needs to be an element');
 	}
@@ -64,6 +66,7 @@ function keepBeforeSibling(sibling, maps) {
 }
 
 function keepAfterSibling(sibling, maps) {
+
 	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
 		throw new Error('The sibling node needs to be an element');
 	}
@@ -82,6 +85,7 @@ function removeAndPopulateFragment(parent, input, _ref) {
 	var condition = _ref.condition,
 	    elements = _ref.elements;
 
+
 	if (match(condition, input)) {
 		elements.forEach(function (element) {
 			return !doc.contains(element) && fragment.appendChild(element);
@@ -94,6 +98,7 @@ function removeAndPopulateFragment(parent, input, _ref) {
 }
 
 function validateParams(parent, maps) {
+
 	// validate parameters
 	if (!parent || !(parent instanceof Element) && parent.nodeType !== ELEMENT_NODE) {
 		throw new Error('The parent node needs to be an element');
@@ -104,6 +109,7 @@ function validateParams(parent, maps) {
 }
 
 function match(condition, input) {
+
 	if (!condition) {
 		return false;
 	}

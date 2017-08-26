@@ -37,11 +37,12 @@ describe('keepers', () => {
 
 		const span = doc.createElement('span')
 		const p = doc.createElement('p')
+		const pre = doc.createElement('PRE')
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentStart(parent, [
 			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p ] },
+			{ condition: (input) => input === 'b', elements: [ p, pre ] },
 			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
 		])
 
@@ -52,9 +53,10 @@ describe('keepers', () => {
 		expect(parent.children[2].nodeName).to.equal('A')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(2)
+		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('P')
-		expect(parent.children[1].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('PRE')
+		expect(parent.children[2].nodeName).to.equal('A')
 
 		keeper('c')
 		expect(parent.children.length).to.equal(2)
@@ -80,11 +82,12 @@ describe('keepers', () => {
 
 		const span = doc.createElement('span')
 		const p = doc.createElement('p')
+		const pre = doc.createElement('PRE')
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentEnd(parent, [
 			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p ] },
+			{ condition: (input) => input === 'b', elements: [ p, pre ] },
 			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
 		])
 
@@ -95,9 +98,10 @@ describe('keepers', () => {
 		expect(parent.children[2].nodeName).to.equal('H1')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(2)
+		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('A')
 		expect(parent.children[1].nodeName).to.equal('P')
+		expect(parent.children[2].nodeName).to.equal('PRE')
 
 		keeper('c')
 		expect(parent.children.length).to.equal(2)
@@ -127,11 +131,12 @@ describe('keepers', () => {
 
 		const span = doc.createElement('span')
 		const p = doc.createElement('p')
+		const pre = doc.createElement('PRE')
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepBeforeSibling(sibling, [
 			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p ] },
+			{ condition: (input) => input === 'b', elements: [ p, pre ] },
 			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
 		])
 
@@ -143,10 +148,11 @@ describe('keepers', () => {
 		expect(parent.children[3].nodeName).to.equal('H2')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(3)
+		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('A')
 		expect(parent.children[1].nodeName).to.equal('P')
-		expect(parent.children[2].nodeName).to.equal('H2')
+		expect(parent.children[2].nodeName).to.equal('PRE')
+		expect(parent.children[3].nodeName).to.equal('H2')
 
 		keeper('c')
 		expect(parent.children.length).to.equal(3)
@@ -178,11 +184,12 @@ describe('keepers', () => {
 
 		const span = doc.createElement('span')
 		const p = doc.createElement('p')
+		const pre = doc.createElement('PRE')
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepAfterSibling(sibling, [
 			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p ] },
+			{ condition: (input) => input === 'b', elements: [ p, pre ] },
 			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
 		])
 
@@ -194,10 +201,11 @@ describe('keepers', () => {
 		expect(parent.children[3].nodeName).to.equal('A')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(3)
+		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('H2')
 		expect(parent.children[1].nodeName).to.equal('P')
-		expect(parent.children[2].nodeName).to.equal('A')
+		expect(parent.children[2].nodeName).to.equal('PRE')
+		expect(parent.children[3].nodeName).to.equal('A')
 
 		keeper('c')
 		expect(parent.children.length).to.equal(3)
