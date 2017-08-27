@@ -41,9 +41,9 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentStart(parent, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p, pre ] },
-			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input === 'b', p, pre ],
+			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -84,8 +84,8 @@ describe('keepers', () => {
 		const p = doc.createElement('p')
 
 		const keeper = keepOnParentStart(parent, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input in { b:1, a:1 }, elements: [ p ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input in { b:1, a:1 }, p ],
 		])
 
 		keeper('a')
@@ -118,9 +118,9 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentEnd(parent, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p, pre ] },
-			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input === 'b', p, pre ],
+			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -161,8 +161,8 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentEnd(parent, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input in { b:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -202,9 +202,9 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepBeforeSibling(sibling, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p, pre ] },
-			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input === 'b', p, pre ],
+			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -253,8 +253,8 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepBeforeSibling(sibling, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input in { b:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -298,9 +298,9 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepAfterSibling(sibling, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input === 'b', elements: [ p, pre ] },
-			{ condition: (input) => input in { c:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input === 'b', p, pre ],
+			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
@@ -349,8 +349,8 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepAfterSibling(sibling, [
-			{ condition: (input) => input === 'a', elements: [ span ] },
-			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+			[ (input) => input === 'a', span ],
+			[ (input) => input in { b:1, a:1 }, h1 ],
 		])
 
 		keeper('a')

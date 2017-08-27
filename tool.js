@@ -118,23 +118,27 @@ function validateParams(parent, maps) {
 		throw new Error('The parent node needs to be an element')
 	}
 	if(!maps || typeof maps !== 'object' || typeof maps.length !== 'number') {
-		throw new Error('The ma')
+		throw new Error('maps needs to be an array of mapping arrays')
 	}
 
+	let map
 	let elements  
+	let condition 
 	let i = maps.length
 	while(i--) {
-		elements = maps[i].elements
-		if(elements && !elements.nodeType && typeof elements.length === 'number') {
-			// reverse the elements list for optimal looping
+		map = maps[i]
+		if(!map || typeof map !== 'object' || typeof map.length !== 'number') {
+			throw new Error('Each map should be an array with a condition as the first item ' +
+			' and appendable dom nodes as subsequent items')
 			maps[i].elements = elements.reverse()
 		}
-		else if(!elements || typeof elements !== 'object' ||
-			!(elements instanceof Node && elements.nodeType)) {
-			throw new Error('elements needs to be a dom element or an array of dom elements')
-		}
 		else {
-			maps[i].elements = [ elements ]
+			maps[i] = {
+				// remove the first item and place it as the condition
+				condition: map.splice(0, 1)[0], 
+				// reverse the elements list for optimal looping
+				elements: map.reverse() 
+			}
 		}
 	}
 }
