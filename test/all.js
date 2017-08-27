@@ -74,6 +74,38 @@ describe('keepers', () => {
 		expect(parent.children[2].nodeName).to.equal('A')
 	})
 
+	it('keeps children in order at the start - with same conditons', () => {
+		const parent = doc.getElementById('root')
+
+		const randomLink = doc.createElement('a')
+		parent.appendChild(randomLink)
+
+		const span = doc.createElement('span')
+		const p = doc.createElement('p')
+
+		const keeper = keepOnParentStart(parent, [
+			{ condition: (input) => input === 'a', elements: [ span ] },
+			{ condition: (input) => input in { b:1, a:1 }, elements: [ p ] },
+		])
+
+		keeper('a')
+		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('SPAN')
+		expect(parent.children[1].nodeName).to.equal('P')
+		expect(parent.children[2].nodeName).to.equal('A')
+
+		keeper('b')
+		expect(parent.children.length).to.equal(2)
+		expect(parent.children[0].nodeName).to.equal('P')
+		expect(parent.children[1].nodeName).to.equal('A')
+
+		keeper('a')
+		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('SPAN')
+		expect(parent.children[1].nodeName).to.equal('P')
+		expect(parent.children[2].nodeName).to.equal('A')
+	})
+
 	it('keep on parent end', () => {
 		const parent = doc.getElementById('root')
 
@@ -119,6 +151,41 @@ describe('keepers', () => {
 		expect(parent.children[2].nodeName).to.equal('H1')
 	})
 
+	it('keep on parent end - with same conditions', () => {
+		const parent = doc.getElementById('root')
+
+		const randomLink = doc.createElement('a')
+		parent.appendChild(randomLink)
+
+		const span = doc.createElement('span')
+		const h1 = doc.createElement('h1')
+
+		const keeper = keepOnParentEnd(parent, [
+			{ condition: (input) => input === 'a', elements: [ span ] },
+			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+		])
+
+		keeper('a')
+		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+
+		keeper('b')
+		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('H1')
+
+		keeper('z')
+		expect(parent.children.length).to.equal(1)
+		expect(parent.children[0].nodeName).to.equal('A')
+
+		keeper('a')
+		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+	})
 
 	it('keep before sibling', () => {
 		const parent = doc.getElementById('root')
@@ -173,6 +240,49 @@ describe('keepers', () => {
 		expect(parent.children[3].nodeName).to.equal('H2')
 	})
 
+	it('keep before sibling - with same conditions', () => {
+		const parent = doc.getElementById('root')
+
+		const randomLink = doc.createElement('a')
+		parent.appendChild(randomLink)
+
+		const sibling = doc.createElement('h2')
+		parent.appendChild(sibling)
+
+		const span = doc.createElement('span')
+		const h1 = doc.createElement('h1')
+
+		const keeper = keepBeforeSibling(sibling, [
+			{ condition: (input) => input === 'a', elements: [ span ] },
+			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+		])
+
+		keeper('a')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('H2')
+
+		keeper('b')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('H1')
+		expect(parent.children[2].nodeName).to.equal('H2')
+
+		keeper('z')
+		expect(parent.children.length).to.equal(2)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('H2')
+
+		keeper('a')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('A')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('H2')
+	})
+
 	it('keep after sibling', () => {
 		const parent = doc.getElementById('root')
 
@@ -209,6 +319,49 @@ describe('keepers', () => {
 
 		keeper('c')
 		expect(parent.children.length).to.equal(3)
+		expect(parent.children[0].nodeName).to.equal('H2')
+		expect(parent.children[1].nodeName).to.equal('H1')
+		expect(parent.children[2].nodeName).to.equal('A')
+
+		keeper('z')
+		expect(parent.children.length).to.equal(2)
+		expect(parent.children[0].nodeName).to.equal('H2')
+		expect(parent.children[1].nodeName).to.equal('A')
+
+		keeper('a')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('H2')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('A')
+	})
+
+	it('keep after sibling - with same conditions', () => {
+		const parent = doc.getElementById('root')
+
+		const sibling = doc.createElement('h2')
+		parent.appendChild(sibling)
+
+		const randomLink = doc.createElement('a')
+		parent.appendChild(randomLink)
+
+		const span = doc.createElement('span')
+		const h1 = doc.createElement('h1')
+
+		const keeper = keepAfterSibling(sibling, [
+			{ condition: (input) => input === 'a', elements: [ span ] },
+			{ condition: (input) => input in { b:1, a:1 }, elements: [ h1 ] },
+		])
+
+		keeper('a')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('H2')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('A')
+
+		keeper('b')
+		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('H2')
 		expect(parent.children[1].nodeName).to.equal('H1')
 		expect(parent.children[2].nodeName).to.equal('A')

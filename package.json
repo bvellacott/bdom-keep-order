@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run build && mocha",
+    "test:debug": "npm run build && mocha debug",
     "build": "node node_modules/babel-cli/bin/babel.js tool.js --out-file index.js"
   },
   "repository": {

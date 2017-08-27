@@ -10,11 +10,21 @@ const fragment = doc.createDocumentFragment()
 export function keepOnParentStart(parent, maps) {
 
 	validateParams(parent, maps)
+	// reverse the map so we can run an optimized loop
+	maps = maps.reverse()
 	return function parentStartKeeper(input) {
+		let lastInDom
+		let addAfterSibling
 		let i = maps.length
 		while(i--) {
-			removeAndPopulateFragment(parent, input, maps[i])
-			parent.insertBefore(fragment, parent.firstChild)
+			lastInDom = removeAndPopulateFragment(parent, input, maps[i])
+			if(addAfterSibling) {
+				parent.insertBefore(fragment, addAfterSibling.nextSibling)
+			}
+			else {
+				parent.insertBefore(fragment, parent.firstChild)
+			}
+			addAfterSibling = lastInDom || addAfterSibling
 		} 
 	}
 }
@@ -25,10 +35,17 @@ export function keepOnParentEnd(parent, maps) {
 	// reverse the map so we can run an optimized loop
 	maps = maps.reverse()
 	return function parentEndKeeper(input) {
+		let lastInDom
+		let addAfterSibling
 		let i = maps.length
 		while(i--) {
-			removeAndPopulateFragment(parent, input, maps[i])
-			parent.appendChild(fragment)
+			lastInDom = removeAndPopulateFragment(parent, input, maps[i])
+			if(addAfterSibling) {
+				parent.insertBefore(fragment, addAfterSibling.nextSibling)
+			}
+			else {
+				parent.appendChild(fragment)
+			}
 		} 
 	}
 }
@@ -68,13 +85,28 @@ export function keepAfterSibling(sibling, maps) {
 }
 
 function removeAndPopulateFragment(parent, input, { condition, elements }) {
+	let removableElement
+	let lastElementInDom 
+	let i = elements.length
 
 	if(match(condition, input)) {
-		elements.forEach( element => (!doc.contains(element) && fragment.appendChild(element)) )
+		while(i--) {
+			lastElementInDom = elements[i]
+			if(!doc.contains(lastElementInDom)) {
+				fragment.appendChild(lastElementInDom)
+			}
+		}
 	}
 	else {
-		elements.forEach( element => (doc.contains(element) && parent.removeChild(element)) )
+		while(i--) {
+			removableElement = elements[i]
+			if(doc.contains(removableElement)) {
+				parent.removeChild(removableElement)
+			}
+		}
 	}
+
+	return lastElementInDom
 }
 
 function validateParams(parent, maps) {
@@ -86,10 +118,26 @@ function validateParams(parent, maps) {
 	if(!maps || typeof maps !== 'object' || typeof maps.length !== 'number') {
 		throw new Error('The ma')
 	}
+
+	let elements  
+	let i = maps.length
+	while(i--) {
+		elements = maps[i].elements
+		if(elements && typeof elements.length === 'number') {
+			// reverse the elements list for optimal looping
+			maps[i].elements = elements.reverse()
+		}
+		else if(!elements || typeof elements !== 'object' ||
+			!(elements instanceof Element && elements.nodeType === ELEMENT_NODE)) {
+			throw new Error('elements needs to be a dom element or an array of dom elements')
+		}
+		else {
+			maps[i].elements = [ elements ]
+		}
+	}
 }
 
 function match(condition, input) {
-
 	if(!condition) {
 		return false
 	}
