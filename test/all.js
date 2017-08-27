@@ -172,7 +172,7 @@ describe('keepers', () => {
 		expect(parent.children[2].nodeName).to.equal('H1')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(3)
+		expect(parent.children.length).to.equal(2)
 		expect(parent.children[0].nodeName).to.equal('A')
 		expect(parent.children[1].nodeName).to.equal('H1')
 
@@ -265,7 +265,7 @@ describe('keepers', () => {
 		expect(parent.children[3].nodeName).to.equal('H2')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(4)
+		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('A')
 		expect(parent.children[1].nodeName).to.equal('H1')
 		expect(parent.children[2].nodeName).to.equal('H2')
@@ -361,7 +361,7 @@ describe('keepers', () => {
 		expect(parent.children[3].nodeName).to.equal('A')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(4)
+		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('H2')
 		expect(parent.children[1].nodeName).to.equal('H1')
 		expect(parent.children[2].nodeName).to.equal('A')

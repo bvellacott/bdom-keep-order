@@ -58,6 +58,7 @@ function keepOnParentEnd(parent, maps) {
 			} else {
 				parent.appendChild(fragment);
 			}
+			addAfterSibling = lastInDom || addAfterSibling;
 		}
 	};
 }

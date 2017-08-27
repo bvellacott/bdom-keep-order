@@ -46,6 +46,7 @@ export function keepOnParentEnd(parent, maps) {
 			else {
 				parent.appendChild(fragment)
 			}
+			addAfterSibling = lastInDom || addAfterSibling
 		} 
 	}
 }
@@ -75,6 +76,7 @@ export function keepAfterSibling(sibling, maps) {
 	}
 	let parent = sibling.parentNode
 	validateParams(parent, maps)
+	// no need to reverse the map here, because we can add in reverse order
 	return function afterSiblingKeeper(input) {
 		let i = maps.length
 		while(i--) {
