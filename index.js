@@ -13,7 +13,8 @@ exports.keepAfterSibling = keepAfterSibling;
 var doc = window.document;
 var ELEMENT_NODE = doc.ELEMENT_NODE;
 var _window = window,
-    Element = _window.Element;
+    Element = _window.Element,
+    Node = _window.Node;
 
 // This tool uses a single document fragment which makes it strictly 
 // synchronous. If you need to use this tool asynchronously, you are
@@ -88,6 +89,7 @@ function keepAfterSibling(sibling, maps) {
 	}
 	var parent = sibling.parentNode;
 	validateParams(parent, maps);
+	// no need to reverse the map here, because we can add in reverse order
 	return function afterSiblingKeeper(input) {
 		var i = maps.length;
 		while (i--) {
@@ -138,10 +140,10 @@ function validateParams(parent, maps) {
 	var i = maps.length;
 	while (i--) {
 		elements = maps[i].elements;
-		if (elements && typeof elements.length === 'number') {
+		if (elements && !elements.nodeType && typeof elements.length === 'number') {
 			// reverse the elements list for optimal looping
 			maps[i].elements = elements.reverse();
-		} else if (!elements || (typeof elements === 'undefined' ? 'undefined' : _typeof(elements)) !== 'object' || !(elements instanceof Element && elements.nodeType === ELEMENT_NODE)) {
+		} else if (!elements || (typeof elements === 'undefined' ? 'undefined' : _typeof(elements)) !== 'object' || !(elements instanceof Node && elements.nodeType)) {
 			throw new Error('elements needs to be a dom element or an array of dom elements');
 		} else {
 			maps[i].elements = [elements];

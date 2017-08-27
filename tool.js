@@ -1,6 +1,6 @@
 const doc = window.document
 const { ELEMENT_NODE } = doc
-const { Element } = window
+const { Element, Node } = window
  
 // This tool uses a single document fragment which makes it strictly 
 // synchronous. If you need to use this tool asynchronously, you are
@@ -125,12 +125,12 @@ function validateParams(parent, maps) {
 	let i = maps.length
 	while(i--) {
 		elements = maps[i].elements
-		if(elements && typeof elements.length === 'number') {
+		if(elements && !elements.nodeType && typeof elements.length === 'number') {
 			// reverse the elements list for optimal looping
 			maps[i].elements = elements.reverse()
 		}
 		else if(!elements || typeof elements !== 'object' ||
-			!(elements instanceof Element && elements.nodeType === ELEMENT_NODE)) {
+			!(elements instanceof Node && elements.nodeType)) {
 			throw new Error('elements needs to be a dom element or an array of dom elements')
 		}
 		else {
