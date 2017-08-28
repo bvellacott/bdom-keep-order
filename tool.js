@@ -11,99 +11,56 @@ export function keepOnParentStart(parent, maps) {
 
 	validateParams(parent, maps)
 	// reverse the map so we can run an optimized loop
-	maps = maps.reverse()
 	return function parentStartKeeper(input) {
 		let lastInDom
 		let addAfterSibling
 		let i = maps.length
-		while(i--) {
+		for(let i = 0; i < maps.length; i++) {
 			lastInDom = removeAndPopulateFragment(parent, input, maps[i])
-			if(addAfterSibling) {
-				parent.insertBefore(fragment, addAfterSibling.nextSibling)
+			if(lastInDom) {
+				if(addAfterSibling) {
+					parent.insertBefore(fragment, addAfterSibling.nextSibling)
+				}
+				else {
+					parent.insertBefore(fragment, parent.firstChild)
+				}
+				addAfterSibling = lastInDom || addAfterSibling
 			}
-			else {
-				parent.insertBefore(fragment, parent.firstChild)
-			}
-			addAfterSibling = lastInDom || addAfterSibling
 		} 
 	}
 }
 
-export function keepOnParentEnd(parent, maps) {
-
-	validateParams(parent, maps)
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse()
-	return function parentEndKeeper(input) {
-		let lastInDom
-		let addAfterSibling
-		let i = maps.length
-		while(i--) {
-			lastInDom = removeAndPopulateFragment(parent, input, maps[i])
-			if(addAfterSibling) {
-				parent.insertBefore(fragment, addAfterSibling.nextSibling)
-			}
-			else {
-				parent.appendChild(fragment)
-			}
-			addAfterSibling = lastInDom || addAfterSibling
-		} 
-	}
-}
-
-export function keepBeforeSibling(sibling, maps) {
-
-	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
-		throw new Error('The sibling node needs to be an element')
-	}
-	const parent = sibling.parentNode
-	validateParams(parent, maps)
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse()
-	return function beforeSiblingKeeper(input) {
-		let i = maps.length
-		while(i--) {
-			removeAndPopulateFragment(parent, input, maps[i])
-			parent.insertBefore(fragment, sibling)
-		} 
-	}
-}
-
-export function keepAfterSibling(sibling, maps) {
-
-	if(!sibling || (!(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE)) {
-		throw new Error('The sibling node needs to be an element')
-	}
-	let parent = sibling.parentNode
-	validateParams(parent, maps)
-	// no need to reverse the map here, because we can add in reverse order
-	return function afterSiblingKeeper(input) {
-		let i = maps.length
-		while(i--) {
-			removeAndPopulateFragment(parent, input, maps[i])
-			parent.insertBefore(fragment, sibling.nextSibling)
-		} 
-	}
-}
-
-function removeAndPopulateFragment(parent, input, { condition, elements }) {
-	let removableElement
+function removeAndPopulateFragment(parent, input, map) {
 	let lastElementInDom 
-	let i = elements.length
 
-	if(match(condition, input)) {
-		while(i--) {
-			lastElementInDom = elements[i]
-			if(!doc.contains(lastElementInDom)) {
-				fragment.appendChild(lastElementInDom)
-			}
+	if(map instanceof Node || typeof map.nodeType === 'number') {
+		lastElementInDom = map
+		// this element should always be connected
+		if(!doc.contains(map)) {
+			fragment.appendChild(map)
 		}
 	}
+	else if(!map || typeof map !== 'object' || typeof map.length !== 'number') {
+		throw new Error('Each map should be a appendable dom node or an array with a condition as the first item ' +
+		' and appendable dom nodes as subsequent items')
+	}
 	else {
-		while(i--) {
-			removableElement = elements[i]
-			if(doc.contains(removableElement)) {
-				parent.removeChild(removableElement)
+		let removableElement
+		let i = 1
+		if(match(map[0], input)) {
+			for(; i < map.length; i++) {
+				lastElementInDom = map[i]
+				if(!doc.contains(lastElementInDom)) {
+					fragment.appendChild(lastElementInDom)
+				}
+			}
+		}
+		else {
+			for(; i < map.length; i++) {
+				removableElement = map[i]
+				if(doc.contains(removableElement)) {
+					parent.removeChild(removableElement)
+				}
 			}
 		}
 	}
@@ -119,33 +76,6 @@ function validateParams(parent, maps) {
 	}
 	if(!maps || typeof maps !== 'object' || typeof maps.length !== 'number') {
 		throw new Error('maps needs to be an array of mapping arrays')
-	}
-
-	let map
-	let elements  
-	let condition 
-	let i = maps.length
-	while(i--) {
-		map = maps[i]
-		if(map instanceof Node || typeof map.nodeType === 'number') {
-			maps[i] = {
-				// this element should always be connected
-				condition: true, 
-				elements: [ map ], 
-			}
-		}
-		else if(!map || typeof map !== 'object' || typeof map.length !== 'number') {
-			throw new Error('Each map should be an array with a condition as the first item ' +
-			' and appendable dom nodes as subsequent items')
-		}
-		else {
-			maps[i] = {
-				// remove the first item and place it as the condition
-				condition: map.splice(0, 1)[0], 
-				// reverse the elements list for optimal looping
-				elements: map.reverse(),
-			}
-		}
 	}
 }
 

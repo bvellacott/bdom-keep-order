@@ -7,9 +7,6 @@ Object.defineProperty(exports, "__esModule", {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.keepOnParentStart = keepOnParentStart;
-exports.keepOnParentEnd = keepOnParentEnd;
-exports.keepBeforeSibling = keepBeforeSibling;
-exports.keepAfterSibling = keepAfterSibling;
 var doc = window.document;
 var ELEMENT_NODE = doc.ELEMENT_NODE;
 var _window = window,
@@ -26,99 +23,51 @@ function keepOnParentStart(parent, maps) {
 
 	validateParams(parent, maps);
 	// reverse the map so we can run an optimized loop
-	maps = maps.reverse();
 	return function parentStartKeeper(input) {
 		var lastInDom = void 0;
 		var addAfterSibling = void 0;
 		var i = maps.length;
-		while (i--) {
-			lastInDom = removeAndPopulateFragment(parent, input, maps[i]);
-			if (addAfterSibling) {
-				parent.insertBefore(fragment, addAfterSibling.nextSibling);
-			} else {
-				parent.insertBefore(fragment, parent.firstChild);
+		for (var _i = 0; _i < maps.length; _i++) {
+			lastInDom = removeAndPopulateFragment(parent, input, maps[_i]);
+			if (lastInDom) {
+				if (addAfterSibling) {
+					parent.insertBefore(fragment, addAfterSibling.nextSibling);
+				} else {
+					parent.insertBefore(fragment, parent.firstChild);
+				}
+				addAfterSibling = lastInDom || addAfterSibling;
 			}
-			addAfterSibling = lastInDom || addAfterSibling;
 		}
 	};
 }
 
-function keepOnParentEnd(parent, maps) {
-
-	validateParams(parent, maps);
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse();
-	return function parentEndKeeper(input) {
-		var lastInDom = void 0;
-		var addAfterSibling = void 0;
-		var i = maps.length;
-		while (i--) {
-			lastInDom = removeAndPopulateFragment(parent, input, maps[i]);
-			if (addAfterSibling) {
-				parent.insertBefore(fragment, addAfterSibling.nextSibling);
-			} else {
-				parent.appendChild(fragment);
-			}
-			addAfterSibling = lastInDom || addAfterSibling;
-		}
-	};
-}
-
-function keepBeforeSibling(sibling, maps) {
-
-	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
-		throw new Error('The sibling node needs to be an element');
-	}
-	var parent = sibling.parentNode;
-	validateParams(parent, maps);
-	// reverse the map so we can run an optimized loop
-	maps = maps.reverse();
-	return function beforeSiblingKeeper(input) {
-		var i = maps.length;
-		while (i--) {
-			removeAndPopulateFragment(parent, input, maps[i]);
-			parent.insertBefore(fragment, sibling);
-		}
-	};
-}
-
-function keepAfterSibling(sibling, maps) {
-
-	if (!sibling || !(sibling instanceof Element) && sibling.nodeType !== ELEMENT_NODE) {
-		throw new Error('The sibling node needs to be an element');
-	}
-	var parent = sibling.parentNode;
-	validateParams(parent, maps);
-	// no need to reverse the map here, because we can add in reverse order
-	return function afterSiblingKeeper(input) {
-		var i = maps.length;
-		while (i--) {
-			removeAndPopulateFragment(parent, input, maps[i]);
-			parent.insertBefore(fragment, sibling.nextSibling);
-		}
-	};
-}
-
-function removeAndPopulateFragment(parent, input, _ref) {
-	var condition = _ref.condition,
-	    elements = _ref.elements;
-
-	var removableElement = void 0;
+function removeAndPopulateFragment(parent, input, map) {
 	var lastElementInDom = void 0;
-	var i = elements.length;
 
-	if (match(condition, input)) {
-		while (i--) {
-			lastElementInDom = elements[i];
-			if (!doc.contains(lastElementInDom)) {
-				fragment.appendChild(lastElementInDom);
-			}
+	if (map instanceof Node || typeof map.nodeType === 'number') {
+		lastElementInDom = map;
+		// this element should always be connected
+		if (!doc.contains(map)) {
+			fragment.appendChild(map);
 		}
+	} else if (!map || (typeof map === 'undefined' ? 'undefined' : _typeof(map)) !== 'object' || typeof map.length !== 'number') {
+		throw new Error('Each map should be a appendable dom node or an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items');
 	} else {
-		while (i--) {
-			removableElement = elements[i];
-			if (doc.contains(removableElement)) {
-				parent.removeChild(removableElement);
+		var removableElement = void 0;
+		var i = 1;
+		if (match(map[0], input)) {
+			for (; i < map.length; i++) {
+				lastElementInDom = map[i];
+				if (!doc.contains(lastElementInDom)) {
+					fragment.appendChild(lastElementInDom);
+				}
+			}
+		} else {
+			for (; i < map.length; i++) {
+				removableElement = map[i];
+				if (doc.contains(removableElement)) {
+					parent.removeChild(removableElement);
+				}
 			}
 		}
 	}
@@ -134,30 +83,6 @@ function validateParams(parent, maps) {
 	}
 	if (!maps || (typeof maps === 'undefined' ? 'undefined' : _typeof(maps)) !== 'object' || typeof maps.length !== 'number') {
 		throw new Error('maps needs to be an array of mapping arrays');
-	}
-
-	var map = void 0;
-	var elements = void 0;
-	var condition = void 0;
-	var i = maps.length;
-	while (i--) {
-		map = maps[i];
-		if (map instanceof Node || typeof map.nodeType === 'number') {
-			maps[i] = {
-				// this element should always be connected
-				condition: true,
-				elements: [map]
-			};
-		} else if (!map || (typeof map === 'undefined' ? 'undefined' : _typeof(map)) !== 'object' || typeof map.length !== 'number') {
-			throw new Error('Each map should be an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items');
-		} else {
-			maps[i] = {
-				// remove the first item and place it as the condition
-				condition: map.splice(0, 1)[0],
-				// reverse the elements list for optimal looping
-				elements: map.reverse()
-			};
-		}
 	}
 }
 
