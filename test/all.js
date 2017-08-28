@@ -41,37 +41,43 @@ describe('keepers', () => {
 		const h1 = doc.createElement('h1')
 
 		const keeper = keepOnParentStart(parent, [
+			doc.createElement('b'),
 			[ (input) => input === 'a', span ],
 			[ (input) => input === 'b', p, pre ],
 			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
 		keeper('a')
-		expect(parent.children.length).to.equal(3)
-		expect(parent.children[0].nodeName).to.equal('SPAN')
-		expect(parent.children[1].nodeName).to.equal('H1')
-		expect(parent.children[2].nodeName).to.equal('A')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('B')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('A')
 
 		keeper('b')
-		expect(parent.children.length).to.equal(3)
-		expect(parent.children[0].nodeName).to.equal('P')
-		expect(parent.children[1].nodeName).to.equal('PRE')
-		expect(parent.children[2].nodeName).to.equal('A')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('B')
+		expect(parent.children[1].nodeName).to.equal('P')
+		expect(parent.children[2].nodeName).to.equal('PRE')
+		expect(parent.children[3].nodeName).to.equal('A')
 
 		keeper('c')
-		expect(parent.children.length).to.equal(2)
-		expect(parent.children[0].nodeName).to.equal('H1')
-		expect(parent.children[1].nodeName).to.equal('A')
-
-		keeper('z')
-		expect(parent.children.length).to.equal(1)
-		expect(parent.children[0].nodeName).to.equal('A')
-
-		keeper('a')
 		expect(parent.children.length).to.equal(3)
-		expect(parent.children[0].nodeName).to.equal('SPAN')
+		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('H1')
 		expect(parent.children[2].nodeName).to.equal('A')
+
+		keeper('z')
+		expect(parent.children.length).to.equal(2)
+		expect(parent.children[0].nodeName).to.equal('B')
+		expect(parent.children[1].nodeName).to.equal('A')
+
+		keeper('a')
+		expect(parent.children.length).to.equal(4)
+		expect(parent.children[0].nodeName).to.equal('B')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('H1')
+		expect(parent.children[3].nodeName).to.equal('A')
 	})
 
 	it('keeps children in order at the start - with same conditons', () => {

@@ -142,9 +142,14 @@ function validateParams(parent, maps) {
 	var i = maps.length;
 	while (i--) {
 		map = maps[i];
-		if (!map || (typeof map === 'undefined' ? 'undefined' : _typeof(map)) !== 'object' || typeof map.length !== 'number') {
+		if (map instanceof Node || typeof map.nodeType === 'number') {
+			maps[i] = {
+				// this element should always be connected
+				condition: true,
+				elements: [map]
+			};
+		} else if (!map || (typeof map === 'undefined' ? 'undefined' : _typeof(map)) !== 'object' || typeof map.length !== 'number') {
 			throw new Error('Each map should be an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items');
-			maps[i].elements = elements.reverse();
 		} else {
 			maps[i] = {
 				// remove the first item and place it as the condition
