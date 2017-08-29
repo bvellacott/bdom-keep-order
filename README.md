@@ -17,27 +17,46 @@ npm install --save bdom-keep-order
     const parent = document.createElement('ul')
     document.getElementsByTagName('body')[0].appendChild(parent)
 
-    this.keeper = keepOnParentStart(parent, [
+    const children = [
       [ show => show === 'show a', document.createTextNode('SHOWING A') ],
       [ show => show === 'show b', document.createTextNode('SHOWING B') ],
       [ show => show === 'show a' || show === 'show b', 
         document.createTextNode('SHOW ON A AND B') ],
-      document.createTextNode('Always show this'),
-    ])
+    ]
+    this.keeper = keepOnParentStart(parent, children)
 
-    this.keeper('show a')
+    this.keeper.keep('show a')
     // SHOWING A
     // SHOW ON A AND B
     // Always show this
 
-    this.keeper('show b')
+    this.keeper.keep('show b')
     // SHOWING B
     // SHOW ON A AND B
     // Always show this
 
-    this.keeper('show z')
+    this.keeper.keep('show z')
     // Always show this
 
+    children.pop()
+
+    this.keeper.keep('show a')
+    // SHOWING A
+    // SHOW ON A AND B
+
+    const reorderedChildren = [
+        children[2],
+        children[1],
+        children[0],
+        document.createTextNode("I'm new!")
+    ]
+
+    this.keeper.reset(reorderedChildren)
+
+    this.keeper.keep('show a')
+    // SHOW ON A AND B
+    // SHOWING A
+    // I'm new!
 ```
 
 ## build

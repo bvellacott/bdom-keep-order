@@ -1,4 +1,5 @@
 const expect = require('expect.js')
+require('babel-polyfill')
 
 // set global document if case the tests arent run in the browser
 const jsdom = require("jsdom");
@@ -47,32 +48,32 @@ describe('keepers', () => {
 			[ (input) => input in { c:1, a:1 }, h1 ],
 		])
 
-		keeper('a')
+		keeper.keep('a')
 		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('SPAN')
 		expect(parent.children[2].nodeName).to.equal('H1')
 		expect(parent.children[3].nodeName).to.equal('A')
 
-		keeper('b')
+		keeper.keep('b')
 		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('P')
 		expect(parent.children[2].nodeName).to.equal('PRE')
 		expect(parent.children[3].nodeName).to.equal('A')
 
-		keeper('c')
+		keeper.keep('c')
 		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('H1')
 		expect(parent.children[2].nodeName).to.equal('A')
 
-		keeper('z')
+		keeper.keep('z')
 		expect(parent.children.length).to.equal(2)
 		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('A')
 
-		keeper('a')
+		keeper.keep('a')
 		expect(parent.children.length).to.equal(4)
 		expect(parent.children[0].nodeName).to.equal('B')
 		expect(parent.children[1].nodeName).to.equal('SPAN')
@@ -94,22 +95,83 @@ describe('keepers', () => {
 			[ (input) => input in { b:1, a:1 }, p ],
 		])
 
-		keeper('a')
+		keeper.keep('a')
 		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('SPAN')
 		expect(parent.children[1].nodeName).to.equal('P')
 		expect(parent.children[2].nodeName).to.equal('A')
 
-		keeper('b')
+		keeper.keep('b')
 		expect(parent.children.length).to.equal(2)
 		expect(parent.children[0].nodeName).to.equal('P')
 		expect(parent.children[1].nodeName).to.equal('A')
 
-		keeper('a')
+		keeper.keep('a')
 		expect(parent.children.length).to.equal(3)
 		expect(parent.children[0].nodeName).to.equal('SPAN')
 		expect(parent.children[1].nodeName).to.equal('P')
 		expect(parent.children[2].nodeName).to.equal('A')
 	})
 
+	it('reset removes items from dom that aren\'t in the new order and replaces maps', () => {
+		const parent = doc.getElementById('root')
+
+		const randomLink = doc.createElement('a')
+		parent.appendChild(randomLink)
+
+		const b = doc.createElement('b')
+		const span = doc.createElement('span')
+		const p = doc.createElement('p')
+		const pre = doc.createElement('pre')
+		const h1 = doc.createElement('h1')
+
+		const keeper = keepOnParentStart(parent, [
+			b,
+			[ (input) => input === 'a', span ],
+			[ (input) => input === 'a', p, pre ],
+			[ (input) => input === 'a', h1 ],
+		])
+
+		keeper.keep('a')
+		expect(parent.children.length).to.equal(6)
+		expect(doc.contains(randomLink)).to.equal(true)
+		expect(doc.contains(b)).to.equal(true)
+		expect(doc.contains(span)).to.equal(true)
+		expect(doc.contains(p)).to.equal(true)
+		expect(doc.contains(pre)).to.equal(true)
+		expect(doc.contains(h1)).to.equal(true)
+
+		let newMaps = [
+			doc.createElement('div'),
+			[ (input) => input === 'a', span, pre ],
+			doc.createElement('div'),
+			[ (input) => input === 'a', p, h1],
+			doc.createElement('div'),
+			[ (input) => input === 'a', b],
+			doc.createElement('div'),
+		]
+
+		keeper.reset(newMaps)
+
+		expect(parent.children.length).to.equal(4)
+		expect(doc.contains(b)).to.equal(false)
+		expect(doc.contains(span)).to.equal(true)
+		expect(doc.contains(p)).to.equal(false)
+		expect(doc.contains(pre)).to.equal(true)
+		expect(doc.contains(h1)).to.equal(true)
+
+		keeper.keep('a')
+
+		expect(parent.children.length).to.equal(10)
+		expect(parent.children[0].nodeName).to.equal('DIV')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('PRE')
+		expect(parent.children[3].nodeName).to.equal('DIV')
+		expect(parent.children[4].nodeName).to.equal('P')
+		expect(parent.children[5].nodeName).to.equal('H1')
+		expect(parent.children[6].nodeName).to.equal('DIV')
+		expect(parent.children[7].nodeName).to.equal('B')
+		expect(parent.children[8].nodeName).to.equal('DIV')
+		expect(parent.children[9].nodeName).to.equal('A')
+	})
 })
