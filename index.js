@@ -17,10 +17,11 @@ var _window = window,
     Element = _window.Element,
     Node = _window.Node;
 
+
+var domNodeError = 'Each map should be a appendable dom node or an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items';
 // This tool uses a single document fragment which makes it strictly 
 // synchronous. If you need to use this tool asynchronously, you are
 // either doing something wrong or you have the wrong tool 
-
 var fragment = doc.createDocumentFragment();
 
 function keepOnParentStart(parent, maps) {
@@ -85,7 +86,7 @@ function removeAndPopulateFragment(parent, input, map) {
 			fragment.appendChild(map);
 		}
 	} else if (!map || (typeof map === 'undefined' ? 'undefined' : _typeof(map)) !== 'object' || typeof map.length !== 'number') {
-		throw new Error('Each map should be a appendable dom node or an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items');
+		throw new Error(domNodeError);
 	} else {
 		var removableElement = void 0;
 		var i = 1;
@@ -166,7 +167,7 @@ function mapElementsIterator(maps) {
 						break;
 					}
 
-					throw new Error('Each map should be a appendable dom node or an array with a condition as the first item ' + ' and appendable dom nodes as subsequent items');
+					throw new Error(domNodeError);
 
 				case 13:
 					ei = 1;

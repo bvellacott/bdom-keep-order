@@ -10,9 +10,16 @@ A good example is routing. When a route matches a component should show. and whe
 npm install --save bdom-keep-order
 ```
 
+... and if you need to support browsers that don't support generator functions you need to install babel polyfill
+```bash
+npm install --save babel-polyfill
+```
+
 ## Usage
 ```js
     import { keepOnParentStart } from 'bdom-keep-order'
+    // uncomment the line below if you need to polyfill generator function support
+    // import 'babel-polyfill'  
 
     const parent = document.createElement('ul')
     document.getElementsByTagName('body')[0].appendChild(parent)
@@ -48,11 +55,13 @@ npm install --save bdom-keep-order
         children[2],
         children[1],
         children[0],
-        document.createTextNode("I'm new!")
+        document.createTextNode("I'm new!"),
     ]
 
+    // reset will try and perform the reordering of the nodes with minimal dom edits
     this.keeper.reset(reorderedChildren)
 
+    // you will need to call keep after reset to see the expected result
     this.keeper.keep('show a')
     // SHOW ON A AND B
     // SHOWING A
