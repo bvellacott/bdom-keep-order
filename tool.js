@@ -22,7 +22,7 @@ export function keepOnParentStart(parent, maps) {
 			let addAfterSibling
 			let i = keeper.maps.length
 			for(let i = 0; i < keeper.maps.length; i++) {
-				lastInDom = removeAndPopulateFragment(parent, input, keeper.maps[i])
+				lastInDom = removeAndPopulateFragment(parent, input, keeper.maps[i], lastInDom)
 				if(lastInDom) {
 					if(addAfterSibling) {
 						parent.insertBefore(fragment, addAfterSibling.nextSibling)
@@ -62,28 +62,28 @@ export function keepOnParentStart(parent, maps) {
 	return keeper
 }
 
-function removeAndPopulateFragment(parent, input, map) {
-	let lastElementInDom 
-
+function removeAndPopulateFragment(parent, input, map, lastElementInDom) {
 	if(map instanceof Node || typeof map.nodeType === 'number') {
-		lastElementInDom = map
 		// this element should always be connected
-		if(!doc.contains(map)) {
+		if(shouldReAppend(map, lastElementInDom)) {
 			fragment.appendChild(map)
 		}
+		lastElementInDom = map
 	}
 	else if(!map || typeof map !== 'object' || typeof map.length !== 'number') {
 		throw new Error(domNodeError)
 	}
 	else {
 		let removableElement
+		let element
 		let i = 1
 		if(match(map[0], input)) {
 			for(; i < map.length; i++) {
-				lastElementInDom = map[i]
-				if(!doc.contains(lastElementInDom)) {
-					fragment.appendChild(lastElementInDom)
+				element = map[i]
+				if(shouldReAppend(element, lastElementInDom)) {
+					fragment.appendChild(element)
 				}
+				lastElementInDom = element
 			}
 		}
 		else {
@@ -97,6 +97,12 @@ function removeAndPopulateFragment(parent, input, map) {
 	}
 
 	return lastElementInDom
+}
+
+function shouldReAppend(node, previousNode) {
+	return (!doc.contains(node) || 
+		!(!doc.previousSibling && !previousNode) ||
+		doc.previousSibling !== previousNode)
 }
 
 function validateParent(parent) {

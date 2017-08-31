@@ -125,21 +125,41 @@ describe('keepers', () => {
 		const pre = doc.createElement('pre')
 		const h1 = doc.createElement('h1')
 
-		const keeper = keepOnParentStart(parent, [
+		let maps = [
 			b,
 			[ (input) => input === 'a', span ],
 			[ (input) => input === 'a', p, pre ],
 			[ (input) => input === 'a', h1 ],
-		])
+		]
+
+		const keeper = keepOnParentStart(parent, maps)
+
+		// validate the initial state
+		keeper.keep('a')
+		expect(parent.children.length).to.equal(6)
+		expect(parent.children[0].nodeName).to.equal('B')
+		expect(parent.children[1].nodeName).to.equal('SPAN')
+		expect(parent.children[2].nodeName).to.equal('P')
+		expect(parent.children[3].nodeName).to.equal('PRE')
+		expect(parent.children[4].nodeName).to.equal('H1')
+		expect(parent.children[5].nodeName).to.equal('A')
+
+		// switch a couple of elements round and see if thats handled correctly
+		maps[0] = [ (input) => input === 'a', p, pre ]
+		maps[2] = b
 
 		keeper.keep('a')
 		expect(parent.children.length).to.equal(6)
-		expect(doc.contains(randomLink)).to.equal(true)
-		expect(doc.contains(b)).to.equal(true)
-		expect(doc.contains(span)).to.equal(true)
-		expect(doc.contains(p)).to.equal(true)
-		expect(doc.contains(pre)).to.equal(true)
-		expect(doc.contains(h1)).to.equal(true)
+		expect(parent.children[0].nodeName).to.equal('P')
+		expect(parent.children[1].nodeName).to.equal('PRE')
+		expect(parent.children[2].nodeName).to.equal('SPAN')
+		expect(parent.children[3].nodeName).to.equal('B')
+		expect(parent.children[4].nodeName).to.equal('H1')
+		expect(parent.children[5].nodeName).to.equal('A')
+
+		// switch them back, but this time don't run keep, but instead reset the map
+		maps[2] = [ (input) => input === 'a', p, pre ]
+		maps[0] = b
 
 		let newMaps = [
 			doc.createElement('div'),
@@ -160,6 +180,7 @@ describe('keepers', () => {
 		expect(doc.contains(pre)).to.equal(true)
 		expect(doc.contains(h1)).to.equal(true)
 
+		// finally call keep to render the rest of the nodes into the dom
 		keeper.keep('a')
 
 		expect(parent.children.length).to.equal(10)
