@@ -1,5 +1,4 @@
 const expect = require('expect.js')
-require('babel-polyfill')
 
 // set global document if case the tests arent run in the browser
 const jsdom = require("jsdom");
