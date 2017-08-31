@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run build && mocha",
     "test:debug": "npm run build && mocha debug",
-    "build": "node node_modules/babel-cli/bin/babel.js tool.js --out-file index.js"
+    "build": "node node_modules/babel-cli/bin/babel.js es6.js --out-file es3.js"
   },
   "repository": {
     "type": "git",
@@ -28,11 +28,14 @@
     "url": "https://github.com/bvellacott/bdom-keep-order/issues"
   },
   "homepage": "https://github.com/bvellacott/bdom-keep-order#readme",
+  "dependencies": {
+    "babel-polyfill": "6.26.0"
+  },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "expect.js": "^0.3.1",
-    "jsdom": "^11.1.0",
-    "mocha": "^3.5.0"
+    "babel-cli": "6.26.0",
+    "babel-preset-es2015": "6.24.1",
+    "expect.js": "0.3.1",
+    "jsdom": "11.1.0",
+    "mocha": "3.5.0"
   }
 }
