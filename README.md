@@ -18,8 +18,8 @@ npm install --save babel-polyfill
 ## Usage
 ```js
     import { keepOnParentStart } from 'bdom-keep-order'
-    // uncomment the line below if you need to polyfill generator function support
-    // import 'babel-polyfill'  
+    // or if you only need to support es6 compatible browsers
+    // import { keepOnParentStart } from 'bdom-keep-order/es6'  
 
     const parent = document.createElement('ul')
     document.getElementsByTagName('body')[0].appendChild(parent)
@@ -30,24 +30,24 @@ npm install --save babel-polyfill
       [ show => show === 'show a' || show === 'show b', 
         document.createTextNode('SHOW ON A AND B') ],
     ]
-    this.keeper = keepOnParentStart(parent, children)
+    const keeper = keepOnParentStart(parent, children)
 
-    this.keeper.keep('show a')
+    keeper.keep('show a')
     // SHOWING A
     // SHOW ON A AND B
     // Always show this
 
-    this.keeper.keep('show b')
+    keeper.keep('show b')
     // SHOWING B
     // SHOW ON A AND B
     // Always show this
 
-    this.keeper.keep('show z')
+    keeper.keep('show z')
     // Always show this
 
     children.pop()
 
-    this.keeper.keep('show a')
+    keeper.keep('show a')
     // SHOWING A
     // SHOW ON A AND B
 
@@ -58,11 +58,12 @@ npm install --save babel-polyfill
         document.createTextNode("I'm new!"),
     ]
 
-    // reset will try and perform the reordering of the nodes with minimal dom edits
-    this.keeper.reset(reorderedChildren)
+    // reset will try and perform the reordering of the nodes with minimal dom // edits, but it's alwasy better to reorder the original list manually if 
+    // possible and avoid the comparison routine
+    keeper.reset(reorderedChildren)
 
     // you will need to call keep after reset to see the expected result
-    this.keeper.keep('show a')
+    keeper.keep('show a')
     // SHOW ON A AND B
     // SHOWING A
     // I'm new!
