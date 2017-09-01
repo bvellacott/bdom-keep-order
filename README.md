@@ -10,11 +10,6 @@ A good example is routing. When a route matches a component should show. and whe
 npm install --save bdom-keep-order
 ```
 
-... and if you need to support browsers that don't support generator functions you need to install babel polyfill
-```bash
-npm install --save babel-polyfill
-```
-
 ## Usage
 ```js
     import { keepOnParentStart } from 'bdom-keep-order'
